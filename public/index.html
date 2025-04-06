@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toni.Wang</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="./public/images/favicon.ico">
+    <link rel="stylesheet" href="./css/nav.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="#" class="logo">Toni</a>
+            <div class="menu-toggle" id="menuToggle">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="profile-section container">
+        <div class="glass-card hero-card">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="profile-name">Toni Wang</h1>
+                    <p class="profile-title">Web Developer & Hardware engineer</p>
+                    <p class="profile-bio">
+                        一个电子信息工程专业在校大学生，梦想是工作是硬件工程师，爱好是网站开发，python开发。
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="#contact" class="primary-btn">Contact Me</a>
+                        <a href="#projects" class="secondary-btn">View Work</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://q.qlogo.cn/headimg_dl?dst_uin=1320823961&spec=640&img_type=jpg" alt="Profile"
+                        class="profile-image">
+                </div>
+            </div>
+            <div class="social-icons">
+                <a href="https://github.com/blankzsh" title="Github"><i class="fab fa-github"></i></a>
+                <a href="mailto:livebask@gmail.com" title="Mail"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section container">
+        <h2 class="section-title">About Me</h2>
+        <div class="glass-card about-card">
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        大家好，我是Toni，一名热爱编程的电子信息工程专业学生。我的科技兴趣包括网站开发和硬件设计。
+                    </p>
+                    <p>
+                        当然我在生活中的兴趣也有很多，比如旅行、摄影和阅读。我喜欢探索新技术，尤其是那些能改变我们生活方式的技术。
+                        足球是我最喜欢的运动，我是一名忠实的皇马拥趸。足球带给我的不仅是运动的乐趣，还有团队合作和坚持不懈的精神。
+                    </p>
+                    <p>
+                        我相信，技术和运动都能激励我们追求卓越，超越自我。无论是在编程的世界里，还是在球场上，我都在不断努力，追求更好的自己。
+                    </p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">3year+</span>
+                        <span class="stat-title">开发经验</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-title">项目</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">20+</span>
+                        <span class="stat-title">客户</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="skills-section container">
+        <h2 class="section-title">My Skills</h2>
+        <div class="glass-card skills-card">
+            <div class="skills-content">
+                <div class="skill-category">
+                    <h3 class="category-title">WEB</h3>
+                    <div class="skills-list">
+                        <div class="skill-item">
+                            <span class="skill-name">HTML/CSS</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="95"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">JavaScript</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="80"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Node.js</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="60"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="skill-category">
+                    <h3 class="category-title">Hardware</h3>
+                    <div class="skills-list">
+                        <div class="skill-item">
+                            <span class="skill-name">C51/STM32</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="60"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Schematic Design & Drawing</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="50"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">C/C++</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="40"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="projects-section container">
+        <h2 class="section-title">My Projects</h2>
+        <div class="project-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="web">Web</button>
+            <!-- <button class="filter-btn" data-filter="app">App</button> -->
+            <button class="filter-btn" data-filter="Python">Python</button>
+        </div>
+        <div class="project-grid">
+            <!-- Project 1 -->
+            <div class="glass-card project-card" data-category="web">
+                <div class="project-image-container">
+                    <img src="https://beof.cn/usr/themes/handsome/assets/img/sj/1.jpg" alt="Project 1" class="project-image">
+                    <div class="project-overlay">
+                        <a href="https://beof.cn/" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-title">个人博客</h3>
+                    <p class="project-description">
+                        分享一些摆烂与学习的经验，记录一些有趣的项目和想法。
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">PHP</span>
+                        <span class="tag">MYSQL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="glass-card project-card" data-category="Python">
+                <div class="project-image-container">
+                    <img src="https://beof.cn/usr/themes/handsome/assets/img/sj/2.jpg" alt="Project 2" class="project-image">
+                    <div class="project-overlay">
+                        <a href="https://beof.cn/index.php/archives/8/" class="project-link" target="_blank"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="https://github.com/blankzsh/CFS-ClubEditor" class="project-link" target="_blank"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-title">基于Python开发的Sqlite数据编辑器</h3>
+                    <p class="project-description">
+                        一个国产的足球游戏CFS（中国足球模拟器）的数据库是基于sqlite的，
+                        这个项目是一个基于Python的sqlite数据编辑器，支持数据的增删改查。
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Tkinker</span>
+                        <span class="tag">Sqlite</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <!-- <div class="glass-card project-card" data-category="app">
+                <div class="project-image-container">
+                    <img src="https://beof.cn/usr/themes/handsome/assets/img/sj/3.jpg" alt="Project 3" class="project-image">
+                    <div class="project-overlay">
+                        <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                        <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="project-info">
+                    <h3 class="project-title"></h3>
+                    <p class="project-description">
+                        A productivity application that helps users manage their tasks efficiently with features
+                        like categories, priorities, and deadline reminders.
+                    </p>
+                    <div class="project-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Firebase</span>
+                        <span class="tag">Redux</span>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section container">
+        <h2 class="section-title">Get In Touch</h2>
+        <div class="contact-container">
+            <div class="glass-card contact-info">
+                <h3>Contact Information</h3>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>livebask@gmail.com</span>
+                </div>
+                <!-- <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <span>+1 (123) 456-7890</span>
+                </div> -->
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>GuiLin, Guangxi</span>
+                </div>
+                <div class="contact-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="glass-card contact-form-container">
+                <form class="contact-form" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" id="name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" id="subject" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" class="form-textarea" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Toni Wang</h3>
+                    <p>Web Developer & Hardware engineer</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-nav">
+                        <h4>Navigation</h4>
+                        <ul>
+                            <li><a href="#home">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#projects">Projects</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-social">
+                        <h4>Social</h4>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Toni Wang. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./js/script.js"></script>
+</body>
+
+</html>
