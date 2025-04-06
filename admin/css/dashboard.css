@@ -1,0 +1,110 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.admin-dashboard .sidebar {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding: 1rem;
+}
+.admin-dashboard .sidebar .logo {
+  margin-bottom: 2rem;
+}
+.admin-dashboard .sidebar .logo img {
+  height: 40px;
+}
+.admin-dashboard .sidebar .nav-links {
+  list-style: none;
+  padding: 0;
+}
+.admin-dashboard .sidebar .nav-links li {
+  margin-bottom: 1rem;
+}
+.admin-dashboard .sidebar .nav-links li a {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+.admin-dashboard .sidebar .nav-links li a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.admin-dashboard .sidebar .nav-links li a i {
+  margin-right: 1rem;
+}
+.admin-dashboard .sidebar .nav-links li.active a {
+  background: rgba(255, 255, 255, 0.2);
+}
+.admin-dashboard .main-content {
+  margin-left: 280px;
+  padding: 2rem;
+}
+.admin-dashboard .main-content .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.admin-dashboard .main-content .stats-grid .stat-card {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+.admin-dashboard .main-content .stats-grid .stat-card .stat-title {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+.admin-dashboard .main-content .stats-grid .stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+}
+.admin-dashboard .main-content .stats-grid .stat-card .stat-change {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+.admin-dashboard .main-content .stats-grid .stat-card .stat-change.positive {
+  color: #28a745;
+}
+.admin-dashboard .main-content .stats-grid .stat-card .stat-change.negative {
+  color: #dc3545;
+}
+.admin-dashboard .main-content .charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.admin-dashboard .main-content .charts-grid .chart-card {
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+.admin-dashboard .main-content .charts-grid .chart-card .chart-title {
+  font-size: 1.125rem;
+  color: white;
+  margin-bottom: 1rem;
+}
+.admin-dashboard .main-content .charts-grid .chart-card canvas {
+  width: 100% !important;
+}
+
+/*# sourceMappingURL=dashboard.css.map */

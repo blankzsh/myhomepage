@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="admin-dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="/images/logo-white.png" alt="Logo">
+            </div>
+            <ul class="nav-links">
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-chart-line"></i>
+                        控制台
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="#">
+                        <i class="fas fa-envelope"></i>
+                        消息
+                    </a>
+                </li>
+                <li>
+                    <a href="setting.html">
+                        <i class="fas fa-cog"></i>
+                        设置
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h2 class="page-title">消息管理</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">总消息数</div>
+                    <div class="stat-value" id="totalMessages">0</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="totalMessagesChange">0%</span> 较上月
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-title">新消息</div>
+                    <div class="stat-value" id="newMessages">0</div>
+                    <div class="stat-change" id="newMessagesChangeContainer">
+                        <i class="fas fa-arrow-up" id="newMessagesIcon"></i>
+                        <span id="newMessagesChange">0%</span> 较上月
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-title">响应率</div>
+                    <div class="stat-value" id="responseRate">0%</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="responseRateChange">0%</span> 较上月
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages-container">
+                <div class="messages-header">
+                    <div class="search-container">
+                        <input type="text" placeholder="搜索消息..." id="messageSearch">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="filter-container">
+                        <select id="statusFilter">
+                            <option value="all">全部</option>
+                            <option value="new">新消息</option>
+                            <option value="read">已读</option>
+                            <option value="replied">已回复</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="messages-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>状态</th>
+                                <th>发送者</th>
+                                <th>邮箱</th>
+                                <th>内容预览</th>
+                                <th>日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messagesTableBody">
+                            <!-- Messages will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <button class="prev-page"><i class="fas fa-chevron-left"></i></button>
+                    <div class="page-numbers">
+                        <span class="current-page">1</span> / <span class="total-pages">1</span>
+                    </div>
+                    <button class="next-page"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">消息趋势</h3>
+                    <canvas id="messagesChart"></canvas>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">消息状态分布</h3>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">消息详情</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="message-info">
+                    <p><strong>发送者：</strong> <span id="modalSender"></span></p>
+                    <p><strong>邮箱：</strong> <span id="modalEmail"></span></p>
+                    <p><strong>日期：</strong> <span id="modalDate"></span></p>
+                    <p><strong>状态：</strong> <span id="modalStatus"></span></p>
+                </div>
+                <div class="message-content" id="modalContent"></div>
+
+                <div class="reply-section" id="replySection">
+                    <h4>回复消息</h4>
+                    <textarea id="replyText" placeholder="输入您的回复..."></textarea>
+                    <button class="btn btn-primary" id="sendReply">发送回复</button>
+                </div>
+
+                <div class="previous-reply" id="previousReply" style="display: none;">
+                    <h4>之前的回复</h4>
+                    <div id="replyContent"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="markAsRead">标记为已读</button>
+                <button class="btn btn-secondary" id="deleteMessage">删除消息</button>
+                <button class="btn btn-secondary" id="closeModal">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content" style="width: 400px;">
+            <div class="modal-header">
+                <h3>确认操作</h3>
+                <span class="close-modal" id="closeConfirmModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">您确定要删除这条消息吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelAction">取消</button>
+                <button class="btn btn-primary" id="confirmAction">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch messages and statistics
+            fetchMessages();
+            fetchStatistics();
+
+            // Initialize charts
+            initMessagesChart();
+            initStatusChart();
+
+            // Add event listeners
+            document.getElementById('messageSearch').addEventListener('input', filterMessages);
+            document.getElementById('statusFilter').addEventListener('change', filterMessages);
+
+            // Modal functionality
+            const messageModal = document.getElementById('messageModal');
+            document.getElementById('closeModal').addEventListener('click', () => {
+                messageModal.style.display = 'none';
+            });
+            document.querySelector('.close-modal').addEventListener('click', () => {
+                messageModal.style.display = 'none';
+            });
+
+            // Confirmation modal
+            const confirmModal = document.getElementById('confirmModal');
+            document.getElementById('closeConfirmModal').addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+            });
+            document.getElementById('cancelAction').addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+            });
+        });
+
+        // Global variables to store data
+        let allMessages = [];
+        let currentMessageId = null;
+
+        function fetchStatistics() {
+            fetch('/api/statistics')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        updateStatistics(result.data);
+                    } else {
+                        console.error('Error fetching statistics:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching statistics:', error);
+                    // Use placeholder data if API fails
+                    updateStatistics({
+                        total: 0,
+                        new: 0,
+                        responseRate: 0
+                    });
+                });
+        }
+
+        function updateStatistics(stats) {
+            document.getElementById('totalMessages').textContent = stats.total;
+            document.getElementById('newMessages').textContent = stats.new;
+            document.getElementById('responseRate').textContent = stats.responseRate + '%';
+
+            // Simulate changes from last month for UI display
+            document.getElementById('totalMessagesChange').textContent = '15.2%';
+            document.getElementById('newMessagesChange').textContent = '-8.5%';
+            document.getElementById('responseRateChange').textContent = '3.7%';
+
+            // Update new messages change styling
+            const newMessagesChangeContainer = document.getElementById('newMessagesChangeContainer');
+            const newMessagesIcon = document.getElementById('newMessagesIcon');
+            if (stats.new > 10) { // Arbitrary threshold for demonstration
+                newMessagesChangeContainer.className = 'stat-change negative';
+                newMessagesIcon.className = 'fas fa-arrow-up';
+            } else {
+                newMessagesChangeContainer.className = 'stat-change positive';
+                newMessagesIcon.className = 'fas fa-arrow-down';
+            }
+        }
+
+        function fetchMessages() {
+            fetch('/api/messages')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        allMessages = result.data;
+                        updateMessagesTable(allMessages);
+                        updateCharts(allMessages);
+                    } else {
+                        console.error('Error fetching messages:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                    // Use placeholder data if API fails
+                    allMessages = generatePlaceholderMessages();
+                    updateMessagesTable(allMessages);
+                    updateCharts(allMessages);
+                });
+        }
+
+        function generatePlaceholderMessages() {
+            // Generate placeholder messages for testing when API fails
+            return [
+                { id: 1, name: 'John Doe', email: 'john@example.com', content: '您好，我在使用您的产品时遇到了一些问题...', status: 'new', created_at: '2025-04-05T10:30:00', updated_at: null, reply: null },
+                { id: 2, name: 'Jane Smith', email: 'jane@example.com', content: '我无法登录我的账户，请问如何重置密码？', status: 'read', created_at: '2025-04-04T15:20:00', updated_at: '2025-04-04T16:00:00', reply: null },
+                { id: 3, name: 'Bob Johnson', email: 'bob@example.com', content: '我认为如果添加这个功能会更好...', status: 'new', created_at: '2025-04-03T09:15:00', updated_at: null, reply: null },
+                { id: 4, name: 'Alice Williams', email: 'alice@example.com', content: '我们公司希望与贵司展开合作...', status: 'replied', created_at: '2025-04-02T14:45:00', updated_at: '2025-04-02T17:20:00', reply: '感谢您的来信，我们很乐意与您合作...' },
+                { id: 5, name: 'Tom Brown', email: 'tom@example.com', content: '在使用API时遇到了问题，请问如何解决？', status: 'new', created_at: '2025-04-01T11:10:00', updated_at: null, reply: null }
+            ];
+        }
+
+        function updateMessagesTable(messages) {
+            const tableBody = document.getElementById('messagesTableBody');
+            tableBody.innerHTML = '';
+
+            if (messages.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" class="text-center">暂无消息</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            messages.forEach(message => {
+                const row = document.createElement('tr');
+
+                // Determine status display text and style
+                let statusText = '';
+                let statusClass = '';
+                switch (message.status) {
+                    case 'new':
+                        statusText = '新消息';
+                        statusClass = 'new';
+                        break;
+                    case 'read':
+                        statusText = '已读';
+                        statusClass = 'read';
+                        break;
+                    case 'replied':
+                        statusText = '已回复';
+                        statusClass = 'replied';
+                        break;
+                    default:
+                        statusText = '未知';
+                        statusClass = 'new';
+                }
+
+                // Create content preview (limit to 30 characters)
+                const contentPreview = message.content.length > 30
+                    ? message.content.substring(0, 30) + '...'
+                    : message.content;
+
+                // Format date
+                const date = new Date(message.created_at).toLocaleDateString();
+
+                row.innerHTML = `
+                    <td>
+                        <span class="status-badge ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td>${message.name}</td>
+                    <td>${message.email}</td>
+                    <td>${contentPreview}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="view-message" data-id="${message.id}">查看</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-message').forEach(button => {
+                button.addEventListener('click', function () {
+                    const messageId = this.getAttribute('data-id');
+                    showMessageDetails(messageId);
+                });
+            });
+        }
+
+        function showMessageDetails(messageId) {
+            const message = allMessages.find(m => m.id == messageId);
+            if (!message) return;
+
+            currentMessageId = messageId;
+
+            document.getElementById('modalTitle').textContent = `来自 ${message.name} 的消息`;
+            document.getElementById('modalSender').textContent = message.name;
+            document.getElementById('modalEmail').textContent = message.email;
+            document.getElementById('modalDate').textContent = new Date(message.created_at).toLocaleString();
+
+            // Set status
+            let statusText = '';
+            let statusClass = '';
+            switch (message.status) {
+                case 'new':
+                    statusText = '新消息';
+                    statusClass = 'status-new';
+                    break;
+                case 'read':
+                    statusText = '已读';
+                    statusClass = 'status-read';
+                    break;
+                case 'replied':
+                    statusText = '已回复';
+                    statusClass = 'status-replied';
+                    break;
+                default:
+                    statusText = '未知';
+                    statusClass = 'status-new';
+            }
+            document.getElementById('modalStatus').textContent = statusText;
+            document.getElementById('modalStatus').className = statusClass;
+            document.getElementById('modalContent').textContent = message.content;
+
+            // Show appropriate controls based on message status
+            const markAsReadBtn = document.getElementById('markAsRead');
+            const replySection = document.getElementById('replySection');
+            const previousReply = document.getElementById('previousReply');
+            const replyContent = document.getElementById('replyContent');
+
+            // Only show "Mark as Read" if message is new
+            markAsReadBtn.style.display = message.status === 'new' ? 'block' : 'none';
+
+            // If message has a reply, show it
+            if (message.reply) {
+                previousReply.style.display = 'block';
+                replyContent.textContent = message.reply;
+                // Hide reply section if already replied
+                replySection.style.display = 'none';
+            } else {
+                previousReply.style.display = 'none';
+                // Show reply section if not replied
+                replySection.style.display = 'block';
+            }
+
+            // Event handlers for buttons
+            markAsReadBtn.onclick = function () {
+                updateMessageStatus(messageId, 'read');
+            };
+
+            document.getElementById('sendReply').onclick = function () {
+                const replyText = document.getElementById('replyText').value.trim();
+                if (replyText) {
+                    sendReply(messageId, replyText);
+                } else {
+                    alert('请输入回复内容');
+                }
+            };
+
+            document.getElementById('deleteMessage').onclick = function () {
+                showConfirmModal('您确定要删除这条消息吗？此操作不可撤销。', () => {
+                    deleteMessage(messageId);
+                });
+            };
+
+            // If message is new, automatically mark as read when viewed
+            if (message.status === 'new') {
+                updateMessageStatus(messageId, 'read', false); // false = don't refresh UI yet
+            }
+
+            document.getElementById('messageModal').style.display = 'block';
+        }
+
+        function updateMessageStatus(messageId, status, refreshUI = true) {
+            fetch(`/api/messages/${messageId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: status })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        // Update local data
+                        const message = allMessages.find(m => m.id == messageId);
+                        if (message) {
+                            message.status = status;
+                            message.updated_at = new Date().toISOString();
+                        }
+
+                        // Update UI based on status change
+                        if (refreshUI) {
+                            document.getElementById('modalStatus').textContent =
+                                status === 'read' ? '已读' : '已回复';
+                            document.getElementById('modalStatus').className =
+                                status === 'read' ? 'status-read' : 'status-replied';
+
+                            // Hide "Mark as Read" button
+                            document.getElementById('markAsRead').style.display = 'none';
+
+                            // Update table and stats
+                            updateMessagesTable(allMessages);
+                            fetchStatistics();
+                        }
+                    } else {
+                        console.error('Error updating message status:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating message status:', error);
+                    alert('更新消息状态失败，请重试');
+                });
+        }
+
+        function sendReply(messageId, replyText) {
+            fetch(`/api/messages/${messageId}/reply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reply: replyText })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        // Update local data
+                        const message = allMessages.find(m => m.id == messageId);
+                        if (message) {
+                            message.status = 'replied';
+                            message.updated_at = new Date().toISOString();
+                            message.reply = replyText;
+                        }
+
+                        // Update UI
+                        document.getElementById('modalStatus').textContent = '已回复';
+                        document.getElementById('modalStatus').className = 'status-replied';
+
+                        // Hide reply section and show previous reply
+                        document.getElementById('replySection').style.display = 'none';
+                        document.getElementById('previousReply').style.display = 'block';
+                        document.getElementById('replyContent').textContent = replyText;
+
+                        // Hide "Mark as Read" button
+                        document.getElementById('markAsRead').style.display = 'none';
+
+                        // Clear reply textarea
+                        document.getElementById('replyText').value = '';
+
+                        // Update table and stats
+                        updateMessagesTable(allMessages);
+                        fetchStatistics();
+
+                        // Show success alert
+                        alert('回复已发送');
+                    } else {
+                        console.error('Error sending reply:', result.message);
+                        alert('发送回复失败：' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending reply:', error);
+                    alert('发送回复失败，请重试');
+                });
+        }
+
+        function deleteMessage(messageId) {
+            fetch(`/api/messages/${messageId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        // Remove from local data
+                        allMessages = allMessages.filter(m => m.id != messageId);
+
+                        // Close modal
+                        document.getElementById('messageModal').style.display = 'none';
+                        document.getElementById('confirmModal').style.display = 'none';
+
+                        // Update table and stats
+                        updateMessagesTable(allMessages);
+                        fetchStatistics();
+                        updateCharts(allMessages);
+
+                        // Show success alert
+                        alert('消息已删除');
+                    } else {
+                        console.error('Error deleting message:', result.message);
+                        alert('删除消息失败：' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting message:', error);
+                    alert('删除消息失败，请重试');
+                });
+        }
+
+        function showConfirmModal(message, confirmCallback) {
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmAction').onclick = confirmCallback;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        function filterMessages() {
+            const searchTerm = document.getElementById('messageSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filteredMessages = allMessages.filter(message => {
+                const matchesSearch =
+                    message.name.toLowerCase().includes(searchTerm) ||
+                    message.email.toLowerCase().includes(searchTerm) ||
+                    message.content.toLowerCase().includes(searchTerm);
+
+                const matchesStatus =
+                    statusFilter === 'all' ||
+                    message.status === statusFilter;
+
+                return matchesSearch && matchesStatus;
+            });
+
+            updateMessagesTable(filteredMessages);
+        }
+
+        function initMessagesChart() {
+            const ctx = document.getElementById('messagesChart').getContext('2d');
+
+            // Create empty chart first, will be updated when data is available
+            window.messagesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '消息数量',
+                        data: [],
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initStatusChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+
+            // Create empty chart first, will be updated when data is available
+            window.statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['新消息', '已读', '已回复'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(75, 192, 192, 0.7)'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(messages) {
+            // Update trends chart data
+            // Group messages by month
+            const messagesByMonth = {};
+            messages.forEach(message => {
+                const date = new Date(message.created_at);
+                const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+
+                if (!messagesByMonth[monthYear]) {
+                    messagesByMonth[monthYear] = 0;
+                }
+                messagesByMonth[monthYear]++;
+            });
+
+            // Sort months chronologically
+            const sortedMonths = Object.keys(messagesByMonth).sort();
+
+            // Get the last 6 months or all if less than 6
+            const recentMonths = sortedMonths.slice(-6);
+            const recentData = recentMonths.map(month => messagesByMonth[month]);
+
+            // Format month labels
+            const monthLabels = recentMonths.map(monthYear => {
+                const [year, month] = monthYear.split('-');
+                const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+                return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+            });
+
+            // Update messages chart
+            window.messagesChart.data.labels = monthLabels;
+            window.messagesChart.data.datasets[0].data = recentData;
+            window.messagesChart.update();
+
+            // Update status chart data
+            const newCount = messages.filter(m => m.status === 'new').length;
+            const readCount = messages.filter(m => m.status === 'read').length;
+            const repliedCount = messages.filter(m => m.status === 'replied').length;
+
+            window.statusChart.data.datasets[0].data = [newCount, readCount, repliedCount];
+            window.statusChart.update();
+        }
+    </script>
+
+    <style>
+        /* Additional CSS specific to messages page */
+        .messages-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 15px;
+            padding-right: 40px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .search-container i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .filter-container select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .messages-table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .messages-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .messages-table th,
+        .messages-table td {
+            padding: 15px;
+            text-align: left;
+            color: white;
+        }
+
+        .messages-table th {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .messages-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .status-badge.new {
+            background: rgba(255, 99, 132, 0.7);
+        }
+
+        .status-badge.read {
+            background: rgba(54, 162, 235, 0.7);
+        }
+
+        .status-badge.replied {
+            background: rgba(75, 192, 192, 0.7);
+        }
+
+        .view-message {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .pagination .page-numbers {
+            margin: 0 15px;
+            color: white;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 10% auto;
+            width: 60%;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: white;
+        }
+
+        .close-modal {
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            color: white;
+        }
+
+        .message-info {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .message-content {
+            white-space: pre-line;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .reply-section {
+            margin-top: 20px;
+        }
+
+        .reply-section h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .reply-section textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .previous-reply {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            white-space: pre-line;
+        }
+
+        .previous-reply h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: rgba(75, 192, 192, 0.7);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: rgba(75, 192, 192, 0.9);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .status-new {
+            color: #ff6384;
+        }
+
+        .status-read {
+            color: #36a2eb;
+        }
+
+        .status-replied {
+            color: #4bc0c0;
+        }
+
+        .page-title {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .messages-header {
+                flex-direction: column;
+            }
+
+            .filter-container {
+                width: 100%;
+            }
+
+            .filter-container select {
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+
+</html>

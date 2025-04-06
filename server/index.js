@@ -1,115 +1,316 @@
 const express = require('express');
-const Redis = require('ioredis');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-
+const db = require('./db');
+const adminRoutes = require('./routes/admin');
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Redis 连接配置
-const redis = new Redis({
-    host: 'localhost',
-    port: 6379,
-    password: '', // 如果设置了密码，在这里填写
-});
-
-// 中间件
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.static('public'));
+app.use('/admin', express.static('admin'));
 
-// 生成唯一ID
-function generateMessageId() {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-// 接收消息的API端点
-app.post('/api/messages', async (req, res) => {
-    try {
-        const { name, email, subject, message } = req.body;
-
-        // 验证必填字段
-        if (!name || !email || !subject || !message) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'All fields are required' 
+// 获取消息列表
+app.get('/api/messages', async (req, res) => {
+    const query = `
+        SELECT * FROM messages 
+        ORDER BY created_at DESC
+    `;
+    
+    db.all(query, [], (err, messages) => {
+        if (err) {
+            console.error('Error fetching messages:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
             });
         }
-
-        // 创建消息对象
-        const messageData = {
-            id: generateMessageId(),
-            name,
-            email,
-            subject,
-            message,
-            timestamp: Date.now()
-        };
-
-        // 将消息存储到Redis
-        // 使用 messageData.id 作为key，消息数据作为value
-        await redis.set(
-            messageData.id, 
-            JSON.stringify(messageData)
-        );
-
-        // 将消息ID添加到消息列表中
-        await redis.rpush('messages_list', messageData.id);
-
-        // 设置成功响应
-        res.status(201).json({
-            success: true,
-            message: 'Message received successfully',
-            data: messageData
-        });
-
-    } catch (error) {
-        console.error('Error saving message:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
-    }
-});
-
-// 获取所有消息的API端点
-app.get('/api/messages', async (req, res) => {
-    try {
-        // 获取所有消息ID
-        const messageIds = await redis.lrange('messages_list', 0, -1);
         
-        // 获取所有消息详情
-        const messages = await Promise.all(
-            messageIds.map(async (id) => {
-                const messageData = await redis.get(id);
-                return JSON.parse(messageData);
-            })
-        );
-
         res.json({
             success: true,
             data: messages
         });
+    });
+});
 
+// 添加新消息
+app.post('/api/messages', async (req, res) => {
+    const { name, email, content } = req.body;
+    
+    const query = `
+        INSERT INTO messages (name, email, content) 
+        VALUES (?, ?, ?)
+    `;
+    
+    db.run(query, [name, email, content], function(err) {
+        if (err) {
+            console.error('Error adding message:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: {
+                id: this.lastID,
+                name,
+                email,
+                content,
+                status: 'new',
+                created_at: new Date().toISOString()
+            }
+        });
+    });
+});
+
+// 删除消息
+app.delete('/api/messages/:id', async (req, res) => {
+    const messageId = req.params.id;
+    
+    const query = 'DELETE FROM messages WHERE id = ?';
+    
+    db.run(query, [messageId], function(err) {
+        if (err) {
+            console.error('Error deleting message:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Message not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Message deleted successfully'
+        });
+    });
+});
+
+// 更新消息状态
+app.patch('/api/messages/:id/status', async (req, res) => {
+    const messageId = req.params.id;
+    const { status } = req.body;
+    
+    const validStatuses = ['new', 'read', 'replied'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid status value'
+        });
+    }
+    
+    const query = `
+        UPDATE messages 
+        SET status = ?, 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+    `;
+    
+    db.run(query, [status, messageId], function(err) {
+        if (err) {
+            console.error('Error updating message status:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Message not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Status updated successfully'
+        });
+    });
+});
+
+// 回复消息
+app.post('/api/messages/:id/reply', async (req, res) => {
+    const messageId = req.params.id;
+    const { reply } = req.body;
+    
+    const query = `
+        UPDATE messages 
+        SET reply = ?,
+            status = 'replied',
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+    `;
+    
+    db.run(query, [reply, messageId], function(err) {
+        if (err) {
+            console.error('Error adding reply:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+        
+        if (this.changes === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Message not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Reply added successfully'
+        });
+    });
+});
+//管理员路由
+app.use('/admin', adminRoutes);
+
+// 获取统计信息
+app.get('/api/statistics', (req, res) => {
+    const query = `
+        SELECT 
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_count,
+            SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied_count
+        FROM messages
+    `;
+    
+    db.get(query, [], (err, stats) => {
+        if (err) {
+            console.error('Error fetching statistics:', err);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal server error'
+            });
+        }
+        
+        const responseRate = stats.total > 0 
+            ? (stats.replied_count / stats.total * 100).toFixed(1) 
+            : 0;
+        
+        res.json({
+            success: true,
+            data: {
+                total: stats.total,
+                new: stats.new_count,
+                responseRate: responseRate
+            }
+        });
+    });
+});
+// 添加消息接口的详细错误处理
+app.post('/api/messages', async (req, res) => {
+    const { name, email, content } = req.body;
+
+    // 添加请求数据验证
+    if (!name || !email || !content) {
+        return res.status(400).json({
+            success: false,
+            message: 'Missing required fields'
+        });
+    }
+
+    console.log('Received message:', { name, email, content }); // 调试日志
+
+    const query = `
+        INSERT INTO messages (name, email, content) 
+        VALUES (?, ?, ?)
+    `;
+    
+    db.run(query, [name, email, content], function(err) {
+        if (err) {
+            console.error('Database error:', err); // 详细错误日志
+            return res.status(500).json({
+                success: false,
+                message: err.message || 'Internal server error'
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: {
+                id: this.lastID,
+                name,
+                email,
+                content,
+                status: 'new',
+                created_at: new Date().toISOString()
+            }
+        });
+    });
+});
+app.post('/api/messages', async (req, res) => {
+    console.log('Received request body:', req.body); // 调试日志
+
+    const { name, email, content } = req.body;
+
+    // 验证必填字段
+    if (!name || !email || !content) {
+        console.log('Missing required fields:', { name, email, content }); // 调试日志
+        return res.status(400).json({
+            success: false,
+            message: 'All fields are required'
+        });
+    }
+
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid email format'
+        });
+    }
+
+    try {
+        const query = `
+            INSERT INTO messages (name, email, content) 
+            VALUES (?, ?, ?)
+        `;
+        
+        db.run(query, [name, email, content], function(err) {
+            if (err) {
+                console.error('Database error:', err); // 详细错误日志
+                return res.status(500).json({
+                    success: false,
+                    message: 'Database error occurred'
+                });
+            }
+            
+            console.log('Message saved successfully:', this.lastID); // 成功日志
+            
+            res.json({
+                success: true,
+                data: {
+                    id: this.lastID,
+                    name,
+                    email,
+                    content,
+                    status: 'new',
+                    created_at: new Date().toISOString()
+                }
+            });
+        });
     } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error('Server error:', error); // 详细错误日志
         res.status(500).json({
             success: false,
             message: 'Internal server error'
         });
     }
 });
-// 设置消息过期时间（例如30天）
-const EXPIRE_TIME = 60 * 60 * 24 * 30; // 30 days in seconds
-
-await redis.set(
-    messageData.id, 
-    JSON.stringify(messageData),
-    'EX',
-    EXPIRE_TIME
-);
 
 
-// 启动服务器
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port http://localhost:${PORT}`);
 });

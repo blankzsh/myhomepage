@@ -1,0 +1,23 @@
+// Colors
+$primary-color: #4a90e2;
+$secondary-color: #6c757d;
+$success-color: #28a745;
+$warning-color: #ffc107;
+$danger-color: #dc3545;
+$light-color: #f8f9fa;
+$dark-color: #343a40;
+
+// Glass effect variables
+$glass-bg: rgba(255, 255, 255, 0.1);
+$glass-border: 1px solid rgba(255, 255, 255, 0.18);
+$glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+$glass-backdrop: blur(10px);
+
+// Typography
+$font-family: 'Inter', -apple-system, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Spacing
+$spacing-unit: 1rem;
+$border-radius: 0.5rem;

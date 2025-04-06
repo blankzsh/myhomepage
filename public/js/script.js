@@ -106,20 +106,19 @@ filterBtns.forEach(btn => {
 });
 
 // Contact form submission
+// 删除重复的 submitMessage 函数，修改 contactForm 处理代码
 if (contactForm) {
     contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Get form values
+        // 获取表单数据并调整为正确的字段名
         const formData = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
-            subject: document.getElementById('subject').value,
-            message: document.getElementById('message').value
+            content: document.getElementById('message').value  // 改为 content
         };
         
         try {
-            // Send data to backend
             const response = await fetch('http://localhost:3000/api/messages', {
                 method: 'POST',
                 headers: {
@@ -134,10 +133,9 @@ if (contactForm) {
                 throw new Error(result.message || 'Failed to send message');
             }
 
-            // Display success message
+            // 显示成功消息
             const formContainer = contactForm.parentElement;
             
-            // Create success message
             const successMessage = document.createElement('div');
             successMessage.className = 'success-message';
             successMessage.innerHTML = `
@@ -147,11 +145,9 @@ if (contactForm) {
                 <button class="submit-btn" id="resetForm">Send Another Message</button>
             `;
             
-            // Hide form and show success message
             contactForm.style.display = 'none';
             formContainer.appendChild(successMessage);
             
-            // Reset form button
             document.getElementById('resetForm').addEventListener('click', () => {
                 contactForm.reset();
                 successMessage.remove();
@@ -164,6 +160,42 @@ if (contactForm) {
         }
     });
 }
+
+async function submitMessage(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    try {
+        const response = await fetch('http://localhost:3000/api/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: formData.get('name'),
+                email: formData.get('email'),
+                content: formData.get('content')
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(result.message || 'Error submitting message');
+        }
+        
+        // 成功提交后清空表单
+        form.reset();
+        alert('Message sent successfully!');
+        
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to send message. Please try again.');
+    }
+}
+
 
 
 // Scroll animations - 移除了技能条动画处理部分

@@ -1,0 +1,121 @@
+@use "variables" as *;
+@use "mixins" as *;
+.admin-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    .sidebar {
+        @include glass-effect;
+        width: 280px;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        padding: $spacing-unit;
+        
+        .logo {
+            margin-bottom: $spacing-unit * 2;
+            img {
+                height: 40px;
+            }
+        }
+        
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            
+            li {
+                margin-bottom: $spacing-unit;
+                
+                a {
+                    display: flex;
+                    align-items: center;
+                    padding: $spacing-unit;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: $border-radius;
+                    transition: all 0.3s ease;
+                    
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    i {
+                        margin-right: $spacing-unit;
+                    }
+                }
+                
+                &.active a {
+                    background: rgba(255, 255, 255, 0.2);
+                }
+            }
+        }
+    }
+    
+    .main-content {
+        margin-left: 280px;
+        padding: $spacing-unit * 2;
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: $spacing-unit;
+            margin-bottom: $spacing-unit * 2;
+            
+            .stat-card {
+                @include glass-effect;
+                padding: $spacing-unit * 1.5;
+                border-radius: $border-radius;
+                
+                .stat-title {
+                    font-size: 0.875rem;
+                    color: rgba(255, 255, 255, 0.7);
+                    margin-bottom: $spacing-unit * 0.5;
+                }
+                
+                .stat-value {
+                    font-size: 2rem;
+                    font-weight: 600;
+                    color: white;
+                }
+                
+                .stat-change {
+                    display: flex;
+                    align-items: center;
+                    margin-top: $spacing-unit * 0.5;
+                    font-size: 0.875rem;
+                    
+                    &.positive {
+                        color: $success-color;
+                    }
+                    
+                    &.negative {
+                        color: $danger-color;
+                    }
+                }
+            }
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: $spacing-unit;
+            
+            .chart-card {
+                @include glass-effect;
+                padding: $spacing-unit * 1.5;
+                border-radius: $border-radius;
+                
+                .chart-title {
+                    font-size: 1.125rem;
+                    color: white;
+                    margin-bottom: $spacing-unit;
+                }
+                
+                canvas {
+                    width: 100% !important;
+                }
+            }
+        }
+    }
+}

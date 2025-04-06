@@ -4,202 +4,909 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Message Admin</a>
-                <div class="d-flex">
-                    <span class="navbar-text me-3">Welcome, Admin</span>
-                    <button class="btn btn-outline-light" @click="logout">Logout</button>
-                </div>
+    <div class="admin-dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="/images/logo-white.png" alt="Logo">
             </div>
-        </nav>
-
-        <div class="container-fluid">
-            <div class="row">
-                <!-- Sidebar -->
-                <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                    <div class="position-sticky pt-3">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a class="nav-link" :class="{ active: currentView === 'dashboard' }" 
-                                   href="#" @click="currentView = 'dashboard'">
-                                    <i class="fas fa-tachometer-alt me-2"></i>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" :class="{ active: currentView === 'messages' }" 
-                                   href="#" @click="currentView = 'messages'">
-                                    <i class="fas fa-envelope me-2"></i>
-                                    Messages
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" :class="{ active: currentView === 'settings' }" 
-                                   href="#" @click="currentView = 'settings'">
-                                    <i class="fas fa-cog me-2"></i>
-                                    Settings
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Main content -->
-                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                    <!-- Dashboard View -->
-                    <div v-if="currentView === 'dashboard'" class="dashboard-view">
-                        <h2 class="mt-4">Dashboard</h2>
-                        <div class="row mt-4">
-                            <div class="col-md-4">
-                                <div class="card bg-primary text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Total Messages</h5>
-                                        <h2 class="card-text">{{ totalMessages }}</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-success text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">New Messages</h5>
-                                        <h2 class="card-text">{{ newMessages }}</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card bg-info text-white">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Response Rate</h5>
-                                        <h2 class="card-text">{{ responseRate }}%</h2>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Messages View -->
-                    <div v-if="currentView === 'messages'" class="messages-view">
-                        <h2 class="mt-4">Messages</h2>
-                        <div class="table-responsive mt-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <div class="search-box">
-                                    <input type="text" class="form-control" v-model="searchQuery" 
-                                           placeholder="Search messages...">
-                                </div>
-                                <div class="filter-box">
-                                    <select class="form-select" v-model="statusFilter">
-                                        <option value="all">All Status</option>
-                                        <option value="new">New</option>
-                                        <option value="read">Read</option>
-                                        <option value="replied">Replied</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Subject</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="message in filteredMessages" :key="message.id">
-                                        <td>{{ formatDate(message.timestamp) }}</td>
-                                        <td>{{ message.name }}</td>
-                                        <td>{{ message.email }}</td>
-                                        <td>{{ message.subject }}</td>
-                                        <td>
-                                            <span class="badge" :class="getStatusBadgeClass(message.status)">
-                                                {{ message.status }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary me-1" 
-                                                    @click="viewMessage(message)">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" 
-                                                    @click="deleteMessage(message.id)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Settings View -->
-                    <div v-if="currentView === 'settings'" class="settings-view">
-                        <h2 class="mt-4">Settings</h2>
-                        <div class="card mt-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Notification Settings</h5>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" 
-                                           v-model="settings.emailNotifications">
-                                    <label class="form-check-label">Email Notifications</label>
-                                </div>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" 
-                                           v-model="settings.autoResponder">
-                                    <label class="form-check-label">Auto Responder</label>
-                                </div>
-                                <button class="btn btn-primary" @click="saveSettings">
-                                    Save Settings
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-            </div>
-        </div>
-
-        <!-- Message View Modal -->
-        <div class="modal fade" id="messageModal" tabindex="-1" ref="messageModal">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Message Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body" v-if="selectedMessage">
-                        <div class="message-details">
-                            <p><strong>From:</strong> {{ selectedMessage.name }}</p>
-                            <p><strong>Email:</strong> {{ selectedMessage.email }}</p>
-                            <p><strong>Subject:</strong> {{ selectedMessage.subject }}</p>
-                            <p><strong>Date:</strong> {{ formatDate(selectedMessage.timestamp) }}</p>
-                            <hr>
-                            <p><strong>Message:</strong></p>
-                            <p>{{ selectedMessage.message }}</p>
-                        </div>
-                        <div class="reply-form mt-4">
-                            <h6>Reply</h6>
-                            <textarea class="form-control" v-model="replyMessage" rows="4"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="sendReply">Send Reply</button>
+            <ul class="nav-links">
+                <li class="active">
+                    <a href="/admin">
+                        <i class="fas fa-chart-line"></i>
+                        控制台
+                    </a>
+                </li>
+                <li>
+                    <a href="meg.html">
+                        <i class="fas fa-envelope"></i>
+                        消息
+                    </a>
+                </li>
+                <li>
+                    <a href="setting.html">
+                        <i class="fas fa-cog"></i>
+                        设置
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <main class="main-content">
+            <h2 class="page-title">控制台概览</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">总消息数</div>
+                    <div class="stat-value" id="totalMessages">0</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="totalMessagesChange">0%</span> 较上月
                     </div>
                 </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">响应率</div>
+                    <div class="stat-value" id="responseRate">0%</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span id="responseRateChange">0%</span> 较上月
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">平均响应时间</div>
+                    <div class="stat-value" id="responseTime">0h</div>
+                    <div class="stat-change" id="responseTimeChangeContainer">
+                        <i class="fas fa-arrow-up" id="responseTimeIcon"></i>
+                        <span id="responseTimeChange">0h</span> 较上月
+                    </div>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">消息趋势</h3>
+                    <canvas id="messagesChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <h3 class="chart-title">消息类型分布</h3>
+                    <canvas id="categoriesChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="recent-messages">
+                <div class="section-header">
+                    <h3>最近消息</h3>
+                    <a href="/api/messages" class="view-all">查看全部</a>
+                </div>
+                
+                <div class="messages-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>状态</th>
+                                <th>发送者</th>
+                                <th>内容预览</th>
+                                <th>日期</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentMessagesTableBody">
+                            <!-- Recent messages will be loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Message Modal -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">消息详情</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="message-info">
+                    <p><strong>发送者：</strong> <span id="modalSender"></span></p>
+                    <p><strong>邮箱：</strong> <span id="modalEmail"></span></p>
+                    <p><strong>日期：</strong> <span id="modalDate"></span></p>
+                    <p><strong>状态：</strong> <span id="modalStatus"></span></p>
+                </div>
+                <div class="message-content" id="modalContent"></div>
+                
+                <div class="reply-section" id="replySection">
+                    <h4>回复消息</h4>
+                    <textarea id="replyText" placeholder="输入您的回复..."></textarea>
+                    <button class="btn btn-primary" id="sendReply">发送回复</button>
+                </div>
+                
+                <div class="previous-reply" id="previousReply" style="display: none;">
+                    <h4>之前的回复</h4>
+                    <div id="replyContent"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="markAsRead">标记为已读</button>
+                <button class="btn btn-secondary" id="closeModal">关闭</button>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch data for dashboard
+            fetchDashboardData();
+            fetchRecentMessages();
+            
+            // Initialize charts
+            initMessagesChart();
+            initCategoriesChart();
+            
+            // Modal functionality
+            const messageModal = document.getElementById('messageModal');
+            document.getElementById('closeModal').addEventListener('click', () => {
+                messageModal.style.display = 'none';
+            });
+            document.querySelector('.close-modal').addEventListener('click', () => {
+                messageModal.style.display = 'none';
+            });
+        });
+        
+        // Global variables to store data
+        let allMessages = [];
+        let currentMessageId = null;
+        
+        function fetchDashboardData() {
+            fetch('/api/statistics')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        updateDashboardStats(result.data);
+                    } else {
+                        console.error('Error fetching dashboard data:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching dashboard data:', error);
+                    // Use placeholder data if API fails
+                    updateDashboardStats({
+                        total: 1234,
+                        responseRate: 94.2,
+                        responseTime: 4.5
+                    });
+                });
+        }
+        
+        function updateDashboardStats(stats) {
+            document.getElementById('totalMessages').textContent = stats.total;
+            document.getElementById('responseRate').textContent = stats.responseRate + '%';
+            document.getElementById('responseTime').textContent = stats.responseTime + 'h';
+            
+            // Simulate changes from last month for UI display
+            document.getElementById('totalMessagesChange').textContent = '12.5%';
+            document.getElementById('responseRateChange').textContent = '5.3%';
+            document.getElementById('responseTimeChange').textContent = '-2.1h';
+            
+            // Update response time styling based on change
+            const responseTimeChangeContainer = document.getElementById('responseTimeChangeContainer');
+            const responseTimeIcon = document.getElementById('responseTimeIcon');
+            
+            // Lower response time is better
+            if (parseFloat(stats.responseTime) < 5) { // Arbitrary threshold
+                responseTimeChangeContainer.className = 'stat-change positive';
+                responseTimeIcon.className = 'fas fa-arrow-down';
+            } else {
+                responseTimeChangeContainer.className = 'stat-change negative';
+                responseTimeIcon.className = 'fas fa-arrow-up';
+            }
+        }
+        
+        function fetchRecentMessages() {
+            fetch('/api/messages?limit=5') // Assuming API supports limit parameter
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        allMessages = result.data;
+                        updateRecentMessagesTable(allMessages);
+                        updateCharts(allMessages);
+                    } else {
+                        console.error('Error fetching messages:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                    // Use placeholder data if API fails
+                    allMessages = generatePlaceholderMessages();
+                    updateRecentMessagesTable(allMessages);
+                    updateCharts(allMessages);
+                });
+        }
+        
+        function generatePlaceholderMessages() {
+            // Generate placeholder messages for testing when API fails
+            return [
+                {id: 1, name: 'John Doe', email: 'john@example.com', content: '您好，我在使用您的产品时遇到了一些问题...', status: 'new', created_at: '2025-04-05T10:30:00', updated_at: null, reply: null, category: '支持请求'},
+                {id: 2, name: 'Jane Smith', email: 'jane@example.com', content: '我无法登录我的账户，请问如何重置密码？', status: 'read', created_at: '2025-04-04T15:20:00', updated_at: '2025-04-04T16:00:00', reply: null, category: '账户问题'},
+                {id: 3, name: 'Bob Johnson', email: 'bob@example.com', content: '我认为如果添加这个功能会更好...', status: 'new', created_at: '2025-04-03T09:15:00', updated_at: null, reply: null, category: '功能建议'},
+                {id: 4, name: 'Alice Williams', email: 'alice@example.com', content: '我们公司希望与贵司展开合作...', status: 'replied', created_at: '2025-04-02T14:45:00', updated_at: '2025-04-02T17:20:00', reply: '感谢您的来信，我们很乐意与您合作...', category: '商务合作'},
+                {id: 5, name: 'Tom Brown', email: 'tom@example.com', content: '在使用API时遇到了问题，请问如何解决？', status: 'new', created_at: '2025-04-01T11:10:00', updated_at: null, reply: null, category: '技术问题'}
+            ];
+        }
+        
+        function updateRecentMessagesTable(messages) {
+            const tableBody = document.getElementById('recentMessagesTableBody');
+            tableBody.innerHTML = '';
+            
+            if (messages.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" class="text-center">暂无消息</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
+            
+            // Show only the 5 most recent messages
+            const recentMessages = messages.slice(0, 5);
+            
+            recentMessages.forEach(message => {
+                const row = document.createElement('tr');
+                
+                // Determine status display text and style
+                let statusText = '';
+                let statusClass = '';
+                switch(message.status) {
+                    case 'new':
+                        statusText = '新消息';
+                        statusClass = 'new';
+                        break;
+                    case 'read':
+                        statusText = '已读';
+                        statusClass = 'read';
+                        break;
+                    case 'replied':
+                        statusText = '已回复';
+                        statusClass = 'replied';
+                        break;
+                    default:
+                        statusText = '未知';
+                        statusClass = 'new';
+                }
+                
+                // Create content preview (limit to 30 characters)
+                const contentPreview = message.content.length > 30 
+                    ? message.content.substring(0, 30) + '...' 
+                    : message.content;
+                
+                // Format date
+                const date = new Date(message.created_at).toLocaleDateString();
+                
+                row.innerHTML = `
+                    <td>
+                        <span class="status-badge ${statusClass}">
+                            ${statusText}
+                        </span>
+                    </td>
+                    <td>${message.name}</td>
+                    <td>${contentPreview}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button class="view-message" data-id="${message.id}">查看</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-message').forEach(button => {
+                button.addEventListener('click', function() {
+                    const messageId = this.getAttribute('data-id');
+                    showMessageDetails(messageId);
+                });
+            });
+        }
+        
+        function showMessageDetails(messageId) {
+            const message = allMessages.find(m => m.id == messageId);
+            if (!message) return;
+            
+            currentMessageId = messageId;
+            
+            document.getElementById('modalTitle').textContent = `来自 ${message.name} 的消息`;
+            document.getElementById('modalSender').textContent = message.name;
+            document.getElementById('modalEmail').textContent = message.email;
+            document.getElementById('modalDate').textContent = new Date(message.created_at).toLocaleString();
+            
+            // Set status
+            let statusText = '';
+            let statusClass = '';
+            switch(message.status) {
+                case 'new':
+                    statusText = '新消息';
+                    statusClass = 'status-new';
+                    break;
+                case 'read':
+                    statusText = '已读';
+                    statusClass = 'status-read';
+                    break;
+                case 'replied':
+                    statusText = '已回复';
+                    statusClass = 'status-replied';
+                    break;
+                default:
+                    statusText = '未知';
+                    statusClass = 'status-new';
+            }
+            document.getElementById('modalStatus').textContent = statusText;
+            document.getElementById('modalStatus').className = statusClass;
+            document.getElementById('modalContent').textContent = message.content;
+            
+            // Show appropriate controls based on message status
+            const markAsReadBtn = document.getElementById('markAsRead');
+            const replySection = document.getElementById('replySection');
+            const previousReply = document.getElementById('previousReply');
+            const replyContent = document.getElementById('replyContent');
+            
+            // Only show "Mark as Read" if message is new
+            markAsReadBtn.style.display = message.status === 'new' ? 'block' : 'none';
+            
+            // If message has a reply, show it
+            if (message.reply) {
+                previousReply.style.display = 'block';
+                replyContent.textContent = message.reply;
+                // Hide reply section if already replied
+                replySection.style.display = 'none';
+            } else {
+                previousReply.style.display = 'none';
+                // Show reply section if not replied
+                replySection.style.display = 'block';
+            }
+            
+            // Event handlers for buttons
+            markAsReadBtn.onclick = function() {
+                updateMessageStatus(messageId, 'read');
+            };
+            
+            document.getElementById('sendReply').onclick = function() {
+                const replyText = document.getElementById('replyText').value.trim();
+                if (replyText) {
+                    sendReply(messageId, replyText);
+                } else {
+                    alert('请输入回复内容');
+                }
+            };
+            
+            // If message is new, automatically mark as read when viewed
+            if (message.status === 'new') {
+                updateMessageStatus(messageId, 'read', false); // false = don't refresh UI yet
+            }
+            
+            document.getElementById('messageModal').style.display = 'block';
+        }
+        
+        function updateMessageStatus(messageId, status, refreshUI = true) {
+            fetch(`/api/messages/${messageId}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: status })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    // Update local data
+                    const message = allMessages.find(m => m.id == messageId);
+                    if (message) {
+                        message.status = status;
+                        message.updated_at = new Date().toISOString();
+                    }
+                    
+                    // Update UI based on status change
+                    if (refreshUI) {
+                        document.getElementById('modalStatus').textContent = 
+                            status === 'read' ? '已读' : '已回复';
+                        document.getElementById('modalStatus').className = 
+                            status === 'read' ? 'status-read' : 'status-replied';
+                        
+                        // Hide "Mark as Read" button
+                        document.getElementById('markAsRead').style.display = 'none';
+                        
+                        // Update table and stats
+                        updateRecentMessagesTable(allMessages);
+                        fetchDashboardData();
+                    }
+                } else {
+                    console.error('Error updating message status:', result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating message status:', error);
+                alert('更新消息状态失败，请重试');
+            });
+        }
+        
+        function sendReply(messageId, replyText) {
+            fetch(`/api/messages/${messageId}/reply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reply: replyText })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(result => {
+                if (result.success) {
+                    // Update local data
+                    const message = allMessages.find(m => m.id == messageId);
+                    if (message) {
+                        message.status = 'replied';
+                        message.updated_at = new Date().toISOString();
+                        message.reply = replyText;
+                    }
+                    
+                    // Update UI
+                    document.getElementById('modalStatus').textContent = '已回复';
+                    document.getElementById('modalStatus').className = 'status-replied';
+                    
+                    // Hide reply section and show previous reply
+                    document.getElementById('replySection').style.display = 'none';
+                    document.getElementById('previousReply').style.display = 'block';
+                    document.getElementById('replyContent').textContent = replyText;
+                    
+                    // Hide "Mark as Read" button
+                    document.getElementById('markAsRead').style.display = 'none';
+                    
+                    // Clear reply textarea
+                    document.getElementById('replyText').value = '';
+                    
+                    // Update table and stats
+                    updateRecentMessagesTable(allMessages);
+                    fetchDashboardData();
+                    updateCharts(allMessages);
+                    
+                    // Show success alert
+                    alert('回复已发送');
+                } else {
+                    console.error('Error sending reply:', result.message);
+                    alert('发送回复失败：' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending reply:', error);
+                alert('发送回复失败，请重试');
+            });
+        }
+        
+        function initMessagesChart() {
+            const ctx = document.getElementById('messagesChart').getContext('2d');
+            
+            // Create empty chart first, will be updated when data is available
+            window.messagesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '消息数量',
+                        data: [],
+                        borderColor: 'rgba(255, 255, 255, 0.8)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initCategoriesChart() {
+            const ctx = document.getElementById('categoriesChart').getContext('2d');
+            
+            // Create empty chart first, will be updated when data is available
+            window.categoriesChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['支持请求', '账户问题', '功能建议', '商务合作', '技术问题'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)'
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateCharts(messages) {
+            // Update trends chart data
+            // Group messages by month
+            const messagesByMonth = {};
+            messages.forEach(message => {
+                const date = new Date(message.created_at);
+                const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                
+                if (!messagesByMonth[monthYear]) {
+                    messagesByMonth[monthYear] = 0;
+                }
+                messagesByMonth[monthYear]++;
+            });
+            
+            // Sort months chronologically
+            const sortedMonths = Object.keys(messagesByMonth).sort();
+            
+            // Get the last 6 months or all if less than 6
+            const recentMonths = sortedMonths.slice(-6);
+            const recentData = recentMonths.map(month => messagesByMonth[month]);
+            
+            // Format month labels
+            const monthLabels = recentMonths.map(monthYear => {
+                const [year, month] = monthYear.split('-');
+                const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+                return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
+            });
+            
+            // Update messages chart
+            window.messagesChart.data.labels = monthLabels;
+            window.messagesChart.data.datasets[0].data = recentData;
+            window.messagesChart.update();
+            
+            // Update categories chart
+            // Count messages by category
+            const categoryCount = {
+                '支持请求': 0,
+                '账户问题': 0,
+                '功能建议': 0,
+                '商务合作': 0,
+                '技术问题': 0
+            };
+            
+            messages.forEach(message => {
+                if (message.category && categoryCount.hasOwnProperty(message.category)) {
+                    categoryCount[message.category]++;
+                } else {
+                    // Default to "支持请求" if category is missing or unknown
+                    categoryCount['支持请求']++;
+                }
+            });
+            
+            // Update categories chart
+            window.categoriesChart.data.datasets[0].data = [
+                categoryCount['支持请求'],
+                categoryCount['账户问题'],
+                categoryCount['功能建议'],
+                categoryCount['商务合作'],
+                categoryCount['技术问题']
+            ];
+            window.categoriesChart.update();
+        }
+    </script>
+    
+    <style>
+        /* Additional styles for dashboard */
+        .page-title {
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-header h3 {
+            color: white;
+            margin: 0;
+        }
+        
+        .view-all {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+        
+        .view-all:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .recent-messages {
+            margin-top: 30px;
+        }
+        
+        .messages-table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .messages-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .messages-table th, 
+        .messages-table td {
+            padding: 15px;
+            text-align: left;
+            color: white;
+        }
+        
+        .messages-table th {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .messages-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .status-badge.new {
+            background: rgba(255, 99, 132, 0.7);
+        }
+        
+        .status-badge.read {
+            background: rgba(54, 162, 235, 0.7);
+        }
+        
+        .status-badge.replied {
+            background: rgba(75, 192, 192, 0.7);
+        }
+        
+        .view-message {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 10% auto;
+            width: 60%;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: white;
+        }
+        
+        .close-modal {
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            color: white;
+        }
+        
+        .message-info {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .message-content {
+            white-space: pre-line;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .reply-section {
+            margin-top: 20px;
+        }
+        
+        .reply-section h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .reply-section textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+        
+        .previous-reply {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            white-space: pre-line;
+        }
+        
+        .previous-reply h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: rgba(75, 192, 192, 0.7);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: rgba(75, 192, 192, 0.9);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .status-new {
+            color: #ff6384;
+        }
+        
+        .status-read {
+            color: #36a2eb;
+        }
+        
+        .status-replied {
+            color: #4bc0c0;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .view-all {
+                margin-top: 10px;
+            }
+        }
+    </style>
 </body>
 </html>
+
+

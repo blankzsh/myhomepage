@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="/images/logo-white.png" alt="Logo">
+            </div>
+            <ul class="nav-links">
+                <li>
+                    <a href="/admin">
+                        <i class="fas fa-chart-line"></i>
+                        控制台
+                    </a>
+                </li>
+                <li>
+                    <a href="/api/messages">
+                        <i class="fas fa-envelope"></i>
+                        消息
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="/api/settings">
+                        <i class="fas fa-cog"></i>
+                        设置
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <main class="main-content">
+            <h2 class="page-title">系统设置</h2>
+            
+            <div class="settings-container">
+                <div class="settings-nav">
+                    <ul class="settings-tabs">
+                        <li class="active" data-tab="general">常规设置</li>
+                        <li data-tab="notifications">通知设置</li>
+                        <li data-tab="security">安全设置</li>
+                        <li data-tab="backup">备份与恢复</li>
+                    </ul>
+                </div>
+                
+                <div class="settings-panels">
+                    <!-- General Settings Panel -->
+                    <div class="settings-panel active" id="general-panel">
+                        <form id="generalSettingsForm">
+                            <div class="form-group">
+                                <label for="siteName">网站名称</label>
+                                <input type="text" id="siteName" name="siteName" value="管理系统">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="language">系统语言</label>
+                                <select id="language" name="language">
+                                    <option value="zh" selected>中文</option>
+                                    <option value="en">English</option>
+                                    <option value="jp">日本語</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="timezone">时区</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="UTC+8" selected>（GMT+8）北京时间</option>
+                                    <option value="UTC+0">（GMT+0）格林威治时间</option>
+                                    <option value="UTC-5">（GMT-5）东部标准时间</option>
+                                    <option value="UTC-8">（GMT-8）太平洋标准时间</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="theme">界面主题</label>
+                                <select id="theme" name="theme">
+                                    <option value="default" selected>默认主题</option>
+                                    <option value="dark">深色模式</option>
+                                    <option value="light">浅色模式</option>
+                                    <option value="auto">跟随系统</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dateFormat">日期格式</label>
+                                <select id="dateFormat" name="dateFormat">
+                                    <option value="YYYY-MM-DD" selected>YYYY-MM-DD</option>
+                                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">保存设置</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Notifications Settings Panel -->
+                    <div class="settings-panel" id="notifications-panel">
+                        <form id="notificationsSettingsForm">
+                            <div class="form-group switch-group">
+                                <label for="emailNotifications">启用邮件通知</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="emailNotifications" name="emailNotifications" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="emailAddress">通知邮箱</label>
+                                <input type="email" id="emailAddress" name="emailAddress" value="admin@example.com">
+                            </div>
+                            
+                            <div class="notification-options">
+                                <h4>接收以下事件的通知：</h4>
+                                
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="notifyNewMessage" name="notifyNewMessage" checked>
+                                    <label for="notifyNewMessage">新消息</label>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="notifySystemError" name="notifySystemError" checked>
+                                    <label for="notifySystemError">系统错误</label>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="notifyUserRegistration" name="notifyUserRegistration" checked>
+                                    <label for="notifyUserRegistration">新用户注册</label>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="notifyUpdateAvailable" name="notifyUpdateAvailable">
+                                    <label for="notifyUpdateAvailable">系统更新</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group switch-group">
+                                <label for="browserNotifications">启用浏览器推送通知</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="browserNotifications" name="browserNotifications">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">保存设置</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Security Settings Panel -->
+                    <div class="settings-panel" id="security-panel">
+                        <form id="securitySettingsForm">
+                            <div class="form-group">
+                                <label for="currentPassword">当前密码</label>
+                                <input type="password" id="currentPassword" name="currentPassword" placeholder="输入当前密码">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newPassword">新密码</label>
+                                <input type="password" id="newPassword" name="newPassword" placeholder="输入新密码">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword">确认新密码</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="确认新密码">
+                            </div>
+                            
+                            <div class="password-strength">
+                                <div class="strength-label">密码强度：</div>
+                                <div class="strength-meter">
+                                    <div class="strength-value" id="passwordStrength"></div>
+                                </div>
+                                <div class="strength-text" id="strengthText">未设置</div>
+                            </div>
+                            
+                            <div class="form-group switch-group">
+                                <label for="twoFactorAuth">启用两步验证</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="twoFactorAuth" name="twoFactorAuth">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="two-factor-options" style="display: none;">
+                                <p>扫描二维码设置两步验证：</p>
+                                <div class="qr-code">
+                                    <img src="/api/placeholder/200/200" alt="两步验证二维码">
+                                </div>
+                                <p>或输入此密钥：<strong>ABCDEF123456</strong></p>
+                            </div>
+                            
+                            <div class="form-group switch-group">
+                                <label for="loginAlerts">登录提醒</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="loginAlerts" name="loginAlerts" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">保存设置</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Backup Settings Panel -->
+                    <div class="settings-panel" id="backup-panel">
+                        <div class="backup-info">
+                            <h3>数据备份</h3>
+                            <p>上次备份时间：<span id="lastBackupTime">2025-04-01 08:30:15</span></p>
+                        </div>
+                        
+                        <div class="backup-options">
+                            <div class="form-group switch-group">
+                                <label for="autoBackup">自动备份</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="autoBackup" name="autoBackup" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="backupFrequency">备份频率</label>
+                                <select id="backupFrequency" name="backupFrequency">
+                                    <option value="daily">每日</option>
+                                    <option value="weekly" selected>每周</option>
+                                    <option value="monthly">每月</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="backupRetention">保留备份数</label>
+                                <select id="backupRetention" name="backupRetention">
+                                    <option value="3">3个备份</option>
+                                    <option value="5" selected>5个备份</option>
+                                    <option value="10">10个备份</option>
+                                    <option value="all">所有备份</option>
+                                </select>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary" id="manualBackup">立即备份</button>
+                        </div>
+                        
+                        <div class="backup-history">
+                            <h3>备份历史</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>备份时间</th>
+                                        <th>大小</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>2025-04-01 08:30:15</td>
+                                        <td>24.5 MB</td>
+                                        <td>
+                                            <button class="btn btn-sm">还原</button>
+                                            <button class="btn btn-sm">下载</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2025-03-25 08:30:10</td>
+                                        <td>23.8 MB</td>
+                                        <td>
+                                            <button class="btn btn-sm">还原</button>
+                                            <button class="btn btn-sm">下载</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2025-03-18 08:30:22</td>
+                                        <td>22.9 MB</td>
+                                        <td>
+                                            <button class="btn btn-sm">还原</button>
+                                            <button class="btn btn-sm">下载</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2025-03-11 08:30:05</td>
+                                        <td>21.2 MB</td>
+                                        <td>
+                                            <button class="btn btn-sm">还原</button>
+                                            <button class="btn btn-sm">下载</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Success Notification -->
+    <div class="notification" id="successNotification">
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="notificationMessage">设置已成功保存！</span>
+        </div>
+    </div>
+    
+    <!-- Confirm Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认操作</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">您确定要还原此备份吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelAction">取消</button>
+                <button class="btn btn-primary" id="confirmAction">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.settings-tabs li');
+            const panels = document.querySelectorAll('.settings-panel');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and panels
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Show corresponding panel
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-panel`).classList.add('active');
+                });
+            });
+            
+            // Password strength checker
+            const newPasswordInput = document.getElementById('newPassword');
+            const strengthMeter = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (newPasswordInput) {
+                newPasswordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    const strength = checkPasswordStrength(password);
+                    
+                    // Update strength meter
+                    strengthMeter.style.width = `${strength.score * 25}%`;
+                    strengthMeter.className = 'strength-value ' + strength.level;
+                    strengthText.textContent = strength.message;
+                });
+            }
+            
+            // Two-factor authentication toggle
+            const twoFactorCheck = document.getElementById('twoFactorAuth');
+            const twoFactorOptions = document.querySelector('.two-factor-options');
+            
+            if (twoFactorCheck) {
+                twoFactorCheck.addEventListener('change', function() {
+                    twoFactorOptions.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+            
+            // Form submission handling
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // In a real app, you would send the form data to the server here
+                    // For demo purposes, we'll just show the success notification
+                    showNotification('设置已成功保存！');
+                });
+            });
+            
+            // Manual backup button
+            const manualBackupBtn = document.getElementById('manualBackup');
+            if (manualBackupBtn) {
+                manualBackupBtn.addEventListener('click', function() {
+                    // In a real app, you would trigger the backup process here
+                    showNotification('备份已开始，请稍候...');
+                    
+                    // Simulate backup completion after 2 seconds
+                    setTimeout(() => {
+                        showNotification('备份已完成！');
+                        // Update last backup time
+                        document.getElementById('lastBackupTime').textContent = new Date().toLocaleString();
+                        
+                        // Add new row to backup history table
+                        const tbody = document.querySelector('.backup-history tbody');
+                        const newRow = document.createElement('tr');
+                        const now = new Date().toLocaleString();
+                        newRow.innerHTML = `
+                            <td>${now}</td>
+                            <td>25.1 MB</td>
+                            <td>
+                                <button class="btn btn-sm">还原</button>
+                                <button class="btn btn-sm">下载</button>
+                            </td>
+                        `;
+                        tbody.insertBefore(newRow, tbody.firstChild);
+                    }, 2000);
+                });
+            }
+            
+            // Modal functionality
+            const confirmModal = document.getElementById('confirmModal');
+            const closeModalBtn = document.querySelector('.close-modal');
+            const cancelActionBtn = document.getElementById('cancelAction');
+            
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', () => {
+                    confirmModal.style.display = 'none';
+                });
+            }
+            
+            if (cancelActionBtn) {
+                cancelActionBtn.addEventListener('click', () => {
+                    confirmModal.style.display = 'none';
+                });
+            }
+            
+            // Add event listeners to "Restore" buttons
+            const restoreButtons = document.querySelectorAll('.backup-history .btn:first-child');
+            restoreButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const date = this.closest('tr').firstElementChild.textContent;
+                    document.getElementById('confirmMessage').textContent = `您确定要还原 ${date} 的备份吗？此操作不可撤销。`;
+                    confirmModal.style.display = 'block';
+                });
+            });
+        });
+        
+        // Check password strength
+        function checkPasswordStrength(password) {
+            if (!password) {
+                return { score: 0, level: 'none', message: '未设置' };
+            }
+            
+            let score = 0;
+            
+            // Length check
+            if (password.length < 6) {
+                return { score: 1, level: 'weak', message: '太短' };
+            } else if (password.length >= 10) {
+                score += 2;
+            } else {
+                score += 1;
+            }
+            
+            // Complexity checks
+            if (/[A-Z]/.test(password)) score += 1; // Uppercase
+            if (/[a-z]/.test(password)) score += 1; // Lowercase
+            if (/[0-9]/.test(password)) score += 1; // Numbers
+            if (/[^A-Za-z0-9]/.test(password)) score += 1; // Special chars
+            
+            // Overall strength
+            if (score < 3) {
+                return { score: 1, level: 'weak', message: '弱' };
+            } else if (score < 5) {
+                return { score: 2, level: 'medium', message: '中' };
+            } else if (score < 6) {
+                return { score: 3, level: 'strong', message: '强' };
+            } else {
+                return { score: 4, level: 'very-strong', message: '非常强' };
+            }
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('successNotification');
+            document.getElementById('notificationMessage').textContent = message;
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+    
+    <style>
+        /* Additional CSS specific to settings page */
+        .settings-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .settings-nav {
+            width: 200px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px 0;
+        }
+        
+        .settings-tabs {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .settings-tabs li {
+            padding: 12px 20px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s;
+        }
+        
+        .settings-tabs li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .settings-tabs li.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left: 3px solid #4bc0c0;
+        }
+        
+        .settings-panels {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .settings-panel {
+            display: none;
+        }
+        
+        .settings-panel.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .switch-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4bc0c0;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+        }
+        
+        .notification-options {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .notification-options h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .password-strength {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .strength-label {
+            margin-right: 10px;
+            color: white;
+        }
+        
+        .strength-meter {
+            height: 8px;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+        
+        .strength-value {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s;
+        }
+        
+        .strength-value.none {
+            width: 0;
+        }
+        
+        .strength-value.weak {
+            width: 25%;
+            background-color: #ff6384;
+        }
+        
+        .strength-value.medium {
+            width: 50%;
+            background-color: #ffcd56;
+        }
+        
+        .strength-value.strong {
+            width: 75%;
+            background-color: #4bc0c0;
+        }
+        
+        .strength-value.very-strong {
+            width: 100%;
+            background-color: #36a2eb;
+        }
+        
+        .strength-text {
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .two-factor-options {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .qr-code {
+            margin: 15px 0;
+        }
+        
+        .backup-info {
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .backup-options {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .backup-history {
+            color: white;
+        }
+        
+        .backup-history table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .backup-history th,
+        .backup-history td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-sm {
+            padding: 5px 8px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #36d1dc, #5b86e5);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-content {
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-content i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .page-title {
+            color: white;
+            margin-bottom: 20px;
+        }
+    </style>
+</body>
+</html>
+
